@@ -1,0 +1,531 @@
+/* ===== Particle.js Configuration ===== */
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 120, density: { enable: true, value_area: 1000 } },
+    color: { value: ["#00ffff", "#0077ff", "#33ccff"] },
+    shape: { type: "circle", stroke: { width: 0, color: "#000000" } },
+    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.2, sync: false } },
+    size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.2, sync: false } },
+    line_linked: { enable: true, distance: 130, color: "#00ffff", opacity: 0.25, width: 1 },
+    move: { enable: true, speed: 1.2, direction: "none", random: true, straight: false, out_mode: "out", attract: { enable: false } }
+  },
+  interactivity: {
+    detect_on: "canvas",
+    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+    modes: { grab: { distance: 140, line_linked: { opacity: 0.6 } }, push: { particles_nb: 3 } }
+  },
+  retina_detect: true
+});
+
+/* ===== Typing Animation ===== */
+const typingText = document.getElementById("typing-text");
+const texts = ["Hacker", "Red Team Operator", "Offensive Security Enthusiast", "Ethical Hacker", "Cybersecurity Professional", "Penetration Tester", "CTF Player & Learner", "Creative Security Researcher"];
+let textIndex = 0, charIndex = 0, isDeleting = false;
+
+function typeWriter() {
+  const currentText = texts[textIndex];
+  if (isDeleting) {
+    typingText.textContent = currentText.substring(0, charIndex - 1);
+    charIndex--;
+  } else {
+    typingText.textContent = currentText.substring(0, charIndex + 1);
+    charIndex++;
+  }
+  if (!isDeleting && charIndex === currentText.length) {
+    isDeleting = true;
+    setTimeout(typeWriter, 2000);
+    return;
+  }
+  if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    textIndex = (textIndex + 1) % texts.length;
+  }
+  setTimeout(typeWriter, isDeleting ? 50 : 100);
+}
+
+/* ===== Cyber Quotes ===== */
+const cyberQuotes = [
+  '"The quieter you become, the more you are able to hear." – Kali Linux',
+  "Did you know? The first computer virus was created in 1971 and called the Creeper.",
+  '"Amateurs hack systems, professionals hack people." – Bruce Schneier',
+  'Fun fact: The word "hacker" originally meant someone who makes furniture with an axe.',
+  '"Security is not a product, but a process." – Bruce Schneier',
+  "Did you know? The world's first website is still online: info.cern.ch",
+  '"There is no patch for human stupidity." – Kevin Mitnick',
+  'Fun fact: The @ symbol in emails is called an "arroba" in Spanish and Portuguese.',
+  'Did you know? The term "bug" in computing came from a real moth found in a computer in 1947.',
+  '"To confound the enemy, you must first understand them." – Sun Tzu (applied to cyber)',
+  "Fun fact: The strongest passwords are long, random, and unique for every site.",
+  "Did you know? The first spam email was sent in 1978 to 393 people.",
+  '"The best way to predict the future is to invent it." – Alan Kay',
+  "Fun fact: Social engineering is one of the most common ways hackers gain access.",
+  "Did you know? The world's largest DDoS attack exceeded 2.5 Tbps in 2021.",
+  '"Hacking is not about breaking and entering. It"s about curiosity, exploration, and learning."',
+  'Fun fact: The word "phishing" comes from "fishing" for information with fake bait.'
+];
+let quoteIndex = 0;
+
+function showNextQuote() {
+  const quoteText = document.getElementById("cyber-quote-text");
+  if (quoteText) {
+    quoteText.textContent = cyberQuotes[quoteIndex];
+    quoteIndex = (quoteIndex + 1) % cyberQuotes.length;
+  }
+}
+
+/* ===== Mobile Menu ===== */
+const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+const mobileMenu = document.getElementById("mobile-menu");
+
+if (mobileMenuBtn && mobileMenu) {
+  mobileMenuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
+}
+
+/* ===== Back to Top Button ===== */
+const backToTopBtn = document.getElementById("back-to-top");
+if (backToTopBtn) {
+  window.addEventListener("scroll", () => {
+    if (window.pageYOffset > 300) {
+      backToTopBtn.classList.remove("opacity-0", "invisible");
+    } else {
+      backToTopBtn.classList.add("opacity-0", "invisible");
+    }
+  });
+
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+/* ===== Contact Form ===== */
+const contactForm = document.getElementById("contact-form");
+if (contactForm) {
+  contactForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+      method: "POST",
+      body: formData,
+      headers: { Accept: "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+      showPopup(false);
+      this.reset();
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      showPopup(true);
+    });
+  });
+}
+
+function showPopup(isError = false) {
+  playCyberSound();
+  const popup = document.getElementById("cyber-popup");
+  if (!popup) return;
+  
+  const popupContent = popup.querySelector(".relative");
+  const popupTitle = document.getElementById("popup-title");
+  const popupMessage = document.getElementById("popup-message");
+  const icon = popup.querySelector(".fas");
+
+  if (popupTitle && popupMessage && icon && popupContent) {
+    if (isError) {
+      popupTitle.textContent = "> ERROR_DETECTED";
+      popupMessage.textContent = "> MESSAGE_STATUS: FAILED";
+      popupTitle.classList.add("text-red-400");
+      popupContent.classList.add("border-red-500/30");
+      icon.classList.remove("fa-terminal");
+      icon.classList.add("fa-exclamation-triangle");
+    } else {
+      popupTitle.textContent = "> TRANSMISSION_RECEIVED";
+      popupMessage.textContent = "> MESSAGE_STATUS: DELIVERED";
+      popupTitle.classList.remove("text-red-400");
+      popupContent.classList.remove("border-red-500/30");
+      icon.classList.remove("fa-exclamation-triangle");
+      icon.classList.add("fa-terminal");
+    }
+
+    popup.classList.remove("hidden");
+    setTimeout(() => {
+      popupContent.classList.remove("scale-95", "opacity-0");
+      popupContent.classList.add("scale-100", "opacity-100");
+    }, 10);
+
+    setTimeout(() => closePopup(), 4000);
+  }
+}
+
+function closePopup() {
+  const popup = document.getElementById("cyber-popup");
+  if (!popup) return;
+  const popupContent = popup.querySelector(".relative");
+  if (popupContent) {
+    popupContent.classList.remove("scale-100", "opacity-100");
+    popupContent.classList.add("scale-95", "opacity-0");
+    setTimeout(() => popup.classList.add("hidden"), 300);
+  }
+}
+
+/* ===== NAVIGATION FIX - CRITICAL ===== */
+function setupNavigation() {
+  // Get navbar height
+  const navbar = document.querySelector('nav');
+  const navHeight = navbar ? navbar.offsetHeight : 80;
+  
+  // Helper function to scroll to section
+  function scrollToSection(sectionId) {
+    const section = document.querySelector(sectionId);
+    if (!section) return;
+    
+    const targetPosition = section.offsetTop - navHeight - 10;
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }
+  
+  // Handle all navigation links
+  const navLinks = document.querySelectorAll('a[href^="#"]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const targetId = this.getAttribute('href');
+      
+      // Close mobile menu
+      if (mobileMenu) {
+        mobileMenu.classList.add("hidden");
+      }
+      
+      // Handle home/top
+      if (targetId === '#' || targetId === '#home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.pushState(null, '', targetId);
+        return;
+      }
+      
+      // Scroll to section
+      scrollToSection(targetId);
+      history.pushState(null, '', targetId);
+      // brief press animation
+      link.classList.add('nav-pressed');
+      setTimeout(() => link.classList.remove('nav-pressed'), 160);
+    });
+  });
+
+  // Scrollspy: highlight the nav link for the current section
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  if (sections.length) {
+    const spyOptions = { root: null, rootMargin: `-${navHeight + 20}px 0px -40% 0px`, threshold: 0 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const link = document.querySelector(`a[href="#${id}"]`);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          document.querySelectorAll('a[href^="#"]').forEach(a => a.classList.remove('nav-active'));
+          link.classList.add('nav-active');
+        }
+      });
+    }, spyOptions);
+    sections.forEach(s => observer.observe(s));
+  }
+  
+  // Handle page load with hash
+  if (window.location.hash) {
+    setTimeout(() => {
+      const hash = window.location.hash;
+      if (hash && hash !== '#') {
+        scrollToSection(hash);
+      }
+    }, 300);
+  }
+  
+  // Handle browser back/forward
+  window.addEventListener('popstate', () => {
+    if (window.location.hash) {
+      scrollToSection(window.location.hash);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+
+/* ===== Cyber Sound ===== */
+function playCyberSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const osc3 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = "square";
+    osc2.type = "sawtooth";
+    osc3.type = "sine";
+
+    const now = ctx.currentTime;
+    const duration = 1.4;
+
+    osc1.frequency.setValueAtTime(200, now);
+    osc1.frequency.exponentialRampToValueAtTime(1100, now + 1.0);
+    osc2.frequency.setValueAtTime(300, now);
+    osc2.frequency.exponentialRampToValueAtTime(1500, now + 1.0);
+    osc3.frequency.setValueAtTime(400, now);
+    osc3.frequency.exponentialRampToValueAtTime(1800, now + 1.0);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    osc3.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc3.start();
+    osc1.stop(now + duration);
+    osc2.stop(now + duration);
+    osc3.stop(now + duration);
+  } catch(e) {
+    console.log('Audio not available');
+  }
+}
+
+/* ===== Custom Cursor ===== */
+function initCursor() {
+  const cursorWrap = document.getElementById('custom-cursor');
+  if (!cursorWrap) return;
+
+  const outer = cursorWrap.querySelector('.cursor-outer');
+  const inner = cursorWrap.querySelector('.cursor-inner');
+  const tail = cursorWrap.querySelector('.cursor-tail');
+
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if (isTouch) {
+    cursorWrap.classList.add('cursor-hidden');
+    return;
+  }
+
+  const TAIL_DOTS = 6;
+  const tailDots = [];
+  for (let i = 0; i < TAIL_DOTS; i++) {
+    const el = document.createElement('span');
+    el.style.opacity = '0';
+    tail.appendChild(el);
+    tailDots.push(el);
+  }
+
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let outerX = mouseX, outerY = mouseY;
+  let innerX = mouseX, innerY = mouseY;
+  const OUTER_LERP = 0.12;
+  const INNER_LERP = 0.35;
+
+  const tailState = tailDots.map(() => ({ x: mouseX, y: mouseY, a: 0 }));
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    outer.style.opacity = '1';
+    inner.style.opacity = '1';
+  }, { passive: true });
+
+  window.addEventListener('mouseout', (e) => {
+    if (!e.relatedTarget || e.relatedTarget.nodeName === 'HTML') {
+      outer.style.opacity = '0';
+      inner.style.opacity = '0';
+      tailDots.forEach(d => d.style.opacity = '0');
+    }
+  });
+
+  window.addEventListener('focusin', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
+      cursorWrap.classList.add('cursor-hidden');
+    }
+  });
+
+  window.addEventListener('focusout', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
+      setTimeout(() => cursorWrap.classList.remove('cursor-hidden'), 10);
+    }
+  });
+
+  function loop() {
+    outerX += (mouseX - outerX) * OUTER_LERP;
+    outerY += (mouseY - outerY) * OUTER_LERP;
+    innerX += (mouseX - innerX) * INNER_LERP;
+    innerY += (mouseY - innerY) * INNER_LERP;
+
+    outer.style.left = outerX + 'px';
+    outer.style.top = outerY + 'px';
+    inner.style.left = innerX + 'px';
+    inner.style.top = innerY + 'px';
+
+    let prevX = mouseX, prevY = mouseY;
+    for (let i = 0; i < tailState.length; i++) {
+      tailState[i].x += (prevX - tailState[i].x) * (0.16 + i * 0.02);
+      tailState[i].y += (prevY - tailState[i].y) * (0.16 + i * 0.02);
+      tailState[i].a = Math.max(0.06, 1 - i * 0.16);
+      const el = tailDots[i];
+      el.style.left = tailState[i].x + 'px';
+      el.style.top = tailState[i].y + 'px';
+      el.style.opacity = String(tailState[i].a);
+      el.style.transform = 'translate(-50%,-50%) scale(' + (1 - i * 0.08) + ')';
+      prevX = tailState[i].x;
+      prevY = tailState[i].y;
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ===== Binary Rain & Card Effects ===== */
+function makeBinaryLine(len = 60) {
+  const pool = '01';
+  let s = '';
+  for (let i = 0; i < len; i++) s += pool[Math.floor(Math.random() * pool.length)];
+  return s;
+}
+
+function initBinaryRain() {
+  document.querySelectorAll('.binary-rain').forEach((el) => {
+    el.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const span = document.createElement('span');
+      span.textContent = makeBinaryLine(64 - i * 6);
+      el.appendChild(span);
+    }
+    setInterval(() => {
+      el.querySelectorAll('span').forEach((s) => {
+        s.textContent = makeBinaryLine(40 + Math.floor(Math.random() * 40));
+      });
+    }, 7000 + Math.floor(Math.random() * 6000));
+  });
+}
+
+function initCardTilt() {
+  const cards = document.querySelectorAll('.cyber-card');
+  cards.forEach((card) => {
+    function onMove(e) {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      const rx = (y) * 8;
+      const ry = -(x) * 12;
+      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+    }
+    function reset() { card.style.transform = ''; }
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('mouseleave', reset);
+  });
+}
+
+function initEntranceObserver() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  document.querySelectorAll('.cyber-card').forEach((c) => observer.observe(c));
+}
+
+/* ===== Terminal ===== */
+function initTerminal() {
+  const output = document.getElementById('terminal-output');
+  const input = document.getElementById('terminal-input');
+  if (!output || !input) return;
+
+  const projects = [
+    { name: 'Enterprise Network', url: 'https://github.com/avadh-150/Multi-floor-Enterprise-Design-Network' }
+  ];
+
+  input.setAttribute('data-placeholder', 'Type a command (help)');
+  let history = [];
+  let historyIndex = -1;
+
+  function printLine(text) {
+    const line = document.createElement('div');
+    line.className = 'out-line';
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function runCommand(raw) {
+    const cmd = raw.trim();
+    const lower = cmd.toLowerCase();
+    printLine(`$ ${cmd}`);
+
+    switch (lower) {
+      case 'help':
+        printLine('Available: help, whoami, projects, contact, clear');
+        break;
+      case 'whoami':
+        printLine('Avadh Radadiya — cybersecurity enthusiast');
+        break;
+      case 'projects':
+        projects.forEach(p => printLine(`${p.name} — ${p.url}`));
+        break;
+      case 'contact':
+        printLine('Email: avadhradadiya43@proton.me');
+        break;
+      case 'clear':
+        output.innerHTML = '';
+        break;
+      default:
+        printLine(`${cmd}: command not found`);
+    }
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const raw = input.innerText || '';
+      if (raw.trim() === '') return;
+      history.push(raw);
+      historyIndex = history.length;
+      runCommand(raw);
+      input.innerText = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      historyIndex = Math.max(0, historyIndex - 1);
+      input.innerText = history[historyIndex] || '';
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      historyIndex = Math.min(history.length, historyIndex + 1);
+      input.innerText = history[historyIndex] || '';
+    }
+  });
+
+  printLine('Type "help" for commands.');
+}
+
+/* ===== Initialize Everything ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  typeWriter();
+  showNextQuote();
+  setInterval(showNextQuote, 6000);
+  setupNavigation(); // CRITICAL - Must be called
+  initCursor();
+  initBinaryRain();
+  initCardTilt();
+  initEntranceObserver();
+  initTerminal();
+});

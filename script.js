@@ -164,6 +164,12 @@ const mobileMenu = document.getElementById("mobile-menu");
 
 mobileMenuBtn.addEventListener("click", () => {
   mobileMenu.classList.toggle("hidden");
+  // ensure sticky nav recalculates height when mobile menu changes
+  // dispatch a resize event to cause updateNavHeight to run (listener added in initStickyNav)
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 120);
+  // also update scrolled state immediately
+  const nav = document.querySelector('nav');
+  if (nav) nav.classList.toggle('nav-scrolled', window.scrollY > 10);
 });
 
 // Back to top button
@@ -246,6 +252,39 @@ function showPopup(isError = false) {
   }, 10);
 
   setTimeout(closePopup, 4000);
+}
+
+// Submit contact helper used by form and terminal 'send' command
+function submitContact({ name, email, message }) {
+  // augment payload with origin metadata
+  const payload = new FormData();
+  payload.append('name', name);
+  payload.append('email', email);
+  payload.append('message', message);
+  payload.append('origin_page', window.location.href);
+  payload.append('referrer', document.referrer || 'direct');
+  payload.append('user_agent', navigator.userAgent || 'unknown');
+
+  // visual animation: show popup while sending
+  showPopup();
+
+  return fetch(document.getElementById('contact-form').action, {
+    method: 'POST',
+    body: payload,
+    headers: { Accept: 'application/json' },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      // keep popup for a moment then close
+      setTimeout(closePopup, 1200);
+      return data;
+    })
+    .catch((err) => {
+      console.error('Contact send error', err);
+      // show error state in popup
+      showPopup(true);
+      throw err;
+    });
 }
 
 function closePopup() {
@@ -515,6 +554,7 @@ function playCyberSound() {
     initBinaryRain();
     initCardTilt();
     initEntranceObserver();
+    initStickyNav();
     initTerminal();
     initOpenInNewTab();
   });
@@ -543,6 +583,33 @@ function playCyberSound() {
         }
       }
     });
+  }
+
+  // Sticky navigation: compute nav height, set CSS var and toggle scrolled class
+  function initStickyNav() {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+
+    // set CSS var for nav height to prevent content overlap
+    function updateNavHeight() {
+      const height = nav.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--nav-height', height + 'px');
+    }
+
+    // toggle scrolled state for visual changes
+    function onScroll() {
+      const scrolled = window.scrollY > 10;
+      nav.classList.toggle('nav-scrolled', scrolled);
+    }
+
+    // init
+    updateNavHeight();
+    onScroll();
+
+    // listeners
+    window.addEventListener('resize', updateNavHeight, { passive: true });
+    window.addEventListener('orientationchange', updateNavHeight);
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
   
   // Interactive terminal implementation
@@ -596,6 +663,21 @@ function playCyberSound() {
         case 'contact':
           printLine(`Email: ${email}`);
           printLine('Or use the contact form on this page.');
+          break;
+        case 'send':
+          // terminal shortcut to send message: read form values and submit
+          {
+            const nameField = document.getElementById('name');
+            const emailField = document.getElementById('email');
+            const messageField = document.getElementById('message');
+            const n = (nameField && nameField.value) || 'Anonymous';
+            const em = (emailField && emailField.value) || 'no-reply@example.com';
+            const msg = (messageField && messageField.value) || 'Message sent via terminal send command.';
+            printLine('Sending message...');
+            submitContact({ name: n, email: em, message: msg })
+              .then(() => printLine('Message sent successfully.'))
+              .catch(() => printLine('Failed to send message.'));
+          }
           break;
         case 'clear':
           output.innerHTML = '';
@@ -664,3 +746,11 @@ function playCyberSound() {
     input.focus();
   }
 })();
+
+
+
+
+
+
+
+

@@ -730,6 +730,34 @@ footer {
   z-index: 10;
 }
 
+/* Sticky navigation helpers */
+:root {
+  /* nav height fallback; JS will set this dynamically */
+  --nav-height: 72px;
+}
+
+nav {
+  position: sticky; /* prefer native sticky behavior */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  transition: background-color 220ms ease, backdrop-filter 220ms ease, border-bottom-color 220ms ease, padding 180ms ease;
+}
+
+/* When scrolled: slightly reduce padding and add stronger background */
+.nav-scrolled {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(6px) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  border-bottom-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+/* Ensure page content doesn't sit under fixed/sticky nav - use CSS var */
+.content-layer {
+  padding-top: var(--nav-height);
+}
+
 /* Make particles cover the entire screen */
   #tsparticles {
     position: fixed;
@@ -739,6 +767,17 @@ footer {
     top: 0;
     left: 0;
   }
+
+/* Navigation active / pressed states */
+.nav-active {
+  color: #7CFC00 !important; /* bright green */
+  text-shadow: 0 0 8px rgba(124,252,0,0.18);
+  
+}
+.nav-pressed {
+  transform: translateY(2px) scale(0.98);
+  transition: transform 140ms ease;
+}
 
 /* Background Elements */
 .bg-pattern {
