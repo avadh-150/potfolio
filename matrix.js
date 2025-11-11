@@ -23,7 +23,7 @@
     ctx.scale(dpr, dpr);
 
     // font and columns size         
-    fontSize = Math.max(10, Math.min(60, Math.floor(width / 100)));
+    fontSize = Math.max(1, Math.min(60, Math.floor(width / 100)));
     ctx.font = `${fontSize}px monospace`;
 
     columns = Math.floor(width / fontSize) + 1;

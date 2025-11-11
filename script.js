@@ -105,28 +105,34 @@ let charIndex = 0;
 let isDeleting = false;
 
 function typeWriter() {
-  const currentText = texts[textIndex];
+  if (!typingText) return; // guard if element not present
+  const currentText = texts[textIndex] || '';
 
-  if (isDeleting) {
-    typingText.textContent = currentText.substring(0, charIndex - 1);
+  if (!isDeleting) {
+    // type forward
+    typingText.textContent = currentText.substring(0, charIndex + 1);
+    charIndex++;
+    if (charIndex === currentText.length) {
+      // pause at end
+      isDeleting = true;
+      setTimeout(typeWriter, 1200);
+      return;
+    }
+  } else {
+    // deleting
+    typingText.textContent = currentText.substring(0, Math.max(0, charIndex - 1));
     charIndex--;
-      // hide on focus of inputs by toggling a class (more reliable)
-      window.addEventListener('focusin', (e) => {
-        const t = e.target;
-        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
-          cursorWrap.classList.add('cursor-hidden');
-        }
-      });
-      window.addEventListener('focusout', (e) => {
-        const t = e.target;
-        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
-          // small delay to avoid flicker when switching elements quickly
-          setTimeout(() => cursorWrap.classList.remove('cursor-hidden'), 10);
-        }
-      });
+    if (charIndex <= 0) {
+      isDeleting = false;
+      textIndex = (textIndex + 1) % texts.length;
+      setTimeout(typeWriter, 300);
+      return;
+    }
   }
 
-  setTimeout(typeWriter, isDeleting ? 50 : 100);
+  // variable speed for more natural effect
+  const delay = isDeleting ? 50 : 110 + Math.floor(Math.random() * 60);
+  setTimeout(typeWriter, delay);
 }
 
 // Rotating Cyber Quotes/Fun Facts
@@ -312,8 +318,14 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   });
 });
 
-// Initialize typing animation
-typeWriter();
+// Initialize typing animation after DOM ready (guard if element missing)
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('typing-text')) {
+    // reset indices
+    textIndex = 0; charIndex = 0; isDeleting = false;
+    typeWriter();
+  }
+});
 
 // Custom cursor follower
 (function () {
