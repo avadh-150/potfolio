@@ -181,128 +181,227 @@ mobileMenuBtn.addEventListener("click", () => {
 // Back to top button
 const backToTopBtn = document.getElementById("back-to-top");
 
-window.addEventListener("scroll", () => {
-  if (window.pageYOffset > 300) {
-    backToTopBtn.classList.remove("opacity-0", "invisible");
-  } else {
-    backToTopBtn.classList.add("opacity-0", "invisible");
-  }
-});
-
-backToTopBtn.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-// Contact form handling
+// Contact form handling - FIXED VERSION with proper Formspree handling
 document
   .getElementById("contact-form")
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    // Get form data
-    var formData = new FormData(this);
+    // Get form values directly (don't use FormData to avoid file upload issues)
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
 
-    // Send form data to Formspree
+    // Validate fields
+    if (!name || !email || !message) {
+      const status = document.getElementById('statusMessage');
+      if (status) {
+        status.style.display = 'block';
+        status.textContent = '✗ Please fill in all fields.';
+        status.classList.remove('text-green-400');
+        status.classList.add('text-red-400');
+      }
+      return;
+    }
+
+    // Create proper JSON payload for Formspree
+    const payload = {
+      name: name,
+      email: email,
+      message: message,
+      _replyto: email, // Formspree will use this for reply-to
+    };
+
+    // Show sending indicator
+    const submitBtn = document.getElementById('submitBtn');
+    const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Sending...</span> <i class="fas fa-spinner fa-spin"></i>';
+    }
+
+    // Send to Formspree
     fetch(this.action, {
       method: "POST",
-      body: formData,
+      body: JSON.stringify(payload),
       headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
       },
     })
-      .then((response) => response.json())
-      .then((data) => {
-        showPopup(); // cyber popup
-        document.getElementById("contact-form").reset();
-      })
+      .then((response) => {
+        // Re-enable button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
 
+        // Check response
+        if (!response.ok) {
+          return response.json().then((err) => {
+            const message = (err && err.error) || `Status ${response.status}`;
+            throw new Error(message);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // SUCCESS - Reset form and show success message
+        document.getElementById("contact-form").reset();
+        
+        const status = document.getElementById('statusMessage');
+        if (status) {
+          status.style.display = 'block';
+          status.textContent = '✓ Message sent successfully! Check your email for confirmation.';
+          status.classList.remove('text-red-400');
+          status.classList.add('text-green-400', 'font-semibold');
+          setTimeout(() => { status.style.display = 'none'; }, 8000);
+        }
+
+        // Show a success popup (without sound)
+        showSuccessPopup();
+        
+        // Optional: Show browser notification if user granted permission
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification("Message Sent!", {
+            body: "Your message has been delivered successfully.",
+            icon: "/favicon.ico" // Update with your icon path
+          });
+        }
+      })
       .catch((error) => {
-        console.error("Error:", error);
-        // Show error message using SweetAlert2
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong! Please try again later.",
-        });
+        console.error("Contact form error:", error);
+        
+        // Re-enable button on error
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
+        
+        // Show error message
+        const status = document.getElementById('statusMessage');
+        if (status) {
+          status.style.display = 'block';
+          status.textContent = '✗ Failed to send message. Please try again or email directly at avadhradadiya43@proton.me';
+          status.classList.remove('text-green-400');
+          status.classList.add('text-red-400');
+        }
       });
   });
 
-function showPopup(isError = false) {
-  playCyberSound();
+// Show success popup WITHOUT sound
+function showSuccessPopup() {
   const popup = document.getElementById("cyber-popup");
-  const popupContent = popup.querySelector(".relative");
+  if (!popup) return;
+
+  const popupContent = popup.querySelector(".relative") || popup.firstElementChild;
   const popupTitle = document.getElementById("popup-title");
   const popupMessage = document.getElementById("popup-message");
   const icon = popup.querySelector(".fas");
 
-  if (isError) {
-    popupTitle.textContent = "> ERROR_DETECTED";
-    popupMessage.textContent = "> MESSAGE_STATUS: FAILED";
-    popupTitle.classList.add("text-red-400");
-    popupContent.classList.add("border-red-500/30");
-    icon.classList.remove("fa-terminal");
-    icon.classList.add("fa-exclamation-triangle");
-  } else {
-    popupTitle.textContent = "> TRANSMISSION_RECEIVED";
-    popupMessage.textContent = "> MESSAGE_STATUS: DELIVERED";
-    popupTitle.classList.remove("text-red-400");
-    popupContent.classList.remove("border-red-500/30");
-    icon.classList.remove("fa-exclamation-triangle");
-    icon.classList.add("fa-terminal");
+  // Set success state
+  if (popupTitle) popupTitle.textContent = "> MESSAGE SENT SUCCESSFULLY";
+  if (popupMessage) popupMessage.textContent = "> Your message has been delivered. Check your email!";
+  if (popupTitle) popupTitle.classList.remove("text-red-400");
+  if (popupContent) popupContent.classList.remove("border-red-500/30");
+  if (icon) { 
+    icon.classList.remove("fa-exclamation-triangle"); 
+    icon.classList.add("fa-check-circle"); 
   }
 
+  // Show popup
   popup.classList.remove("hidden");
   setTimeout(() => {
-    popupContent.classList.remove("scale-95", "opacity-0");
-    popupContent.classList.add("scale-100", "opacity-100");
+    if (popupContent) {
+      popupContent.classList.remove("scale-95", "opacity-0");
+      popupContent.classList.add("scale-100", "opacity-100");
+    }
   }, 10);
 
+  // Auto-close after 4 seconds
   setTimeout(closePopup, 4000);
-}
-
-// Submit contact helper used by form and terminal 'send' command
-function submitContact({ name, email, message }) {
-  // augment payload with origin metadata
-  const payload = new FormData();
-  payload.append('name', name);
-  payload.append('email', email);
-  payload.append('message', message);
-  payload.append('origin_page', window.location.href);
-  payload.append('referrer', document.referrer || 'direct');
-  payload.append('user_agent', navigator.userAgent || 'unknown');
-
-  // visual animation: show popup while sending
-  showPopup();
-
-  return fetch(document.getElementById('contact-form').action, {
-    method: 'POST',
-    body: payload,
-    headers: { Accept: 'application/json' },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      // keep popup for a moment then close
-      setTimeout(closePopup, 1200);
-      return data;
-    })
-    .catch((err) => {
-      console.error('Contact send error', err);
-      // show error state in popup
-      showPopup(true);
-      throw err;
-    });
 }
 
 function closePopup() {
   const popup = document.getElementById("cyber-popup");
-  const popupContent = popup.querySelector(".relative");
+  if (!popup) return;
+  const popupContent = popup.querySelector(".relative") || popup.firstElementChild;
+  if (popupContent) {
+    popupContent.classList.remove("scale-100", "opacity-100");
+    popupContent.classList.add("scale-95", "opacity-0");
+  }
+  setTimeout(() => { if (popup) popup.classList.add('hidden'); }, 300);
+}
 
-  popupContent.classList.remove("scale-100", "opacity-100");
-  popupContent.classList.add("scale-95", "opacity-0");
+// Updated submitContact function (used by terminal) - NO SOUND, uses JSON
+function submitContact({ name, email, message }) {
+  const payload = {
+    name: name,
+    email: email,
+    message: message,
+    _replyto: email,
+    origin: 'terminal'
+  };
 
-  setTimeout(() => {
-    popup.classList.add("hidden");
-  }, 300);
+  const actionUrlEl = document.getElementById('contact-form');
+  const actionUrl = actionUrlEl ? actionUrlEl.action : null;
+  if (!actionUrl) {
+    return Promise.reject(new Error('No form action URL'));
+  }
+
+  return fetch(actionUrl, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return res.json().then(err => {
+          const message = (err && err.error) || `Status ${res.status}`;
+          throw new Error(message);
+        }).catch(() => { throw new Error(`Status ${res.status}`); });
+      }
+      return res.json();
+    })
+    .then((data) => {
+      // Success - show popup briefly (NO SOUND)
+      showSuccessPopup();
+      
+      const status = document.getElementById('statusMessage');
+      if (status) {
+        status.style.display = 'block';
+        status.textContent = '✓ Message sent successfully! Check your email for confirmation.';
+        status.classList.remove('text-red-400');
+        status.classList.add('text-green-400', 'font-semibold');
+        setTimeout(() => { status.style.display = 'none'; }, 8000);
+      }
+      return data;
+    })
+    .catch((err) => {
+      console.error('Contact send error', err);
+      
+      const status = document.getElementById('statusMessage');
+      if (status) {
+        status.style.display = 'block';
+        status.textContent = '✗ Failed to send message. Please try again.';
+        status.classList.remove('text-green-400');
+        status.classList.add('text-red-400');
+      }
+      throw err;
+    });
+}
+function closePopup() {
+  const popup = document.getElementById("cyber-popup");
+  if (!popup) return;
+  const popupContent = popup.querySelector(".relative") || popup.firstElementChild;
+  if (popupContent) {
+    popupContent.classList.remove("scale-100", "opacity-100");
+    popupContent.classList.add("scale-95", "opacity-0");
+  }
+  setTimeout(() => { if (popup) popup.classList.add('hidden'); }, 300);
 }
 
 // Smooth scrolling for navigation links
@@ -632,7 +731,7 @@ function playCyberSound() {
 
     const name = 'Avadh Radadiya';
     const title = 'cybersecurity enthusiast';
-    const email = 'avadhradadiya43@proton.me';
+    const email = 'cyboar01@outlook.com';
     const projects = [
       { name: 'Enterprise Network', url: 'https://github.com/avadh-150/Multi-floor-Enterprise-Design-Network' },
       // { name: 'RedHawk', url: 'https://github.com/Vasoyasharan/RedHawk' },
