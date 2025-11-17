@@ -282,7 +282,7 @@ document
         const status = document.getElementById('statusMessage');
         if (status) {
           status.style.display = 'block';
-          status.textContent = '✗ Failed to send message. Please try again or email directly at avadhradadiya43@proton.me';
+          status.textContent = '✗ Failed to send message. Please try again ';
           status.classList.remove('text-green-400');
           status.classList.add('text-red-400');
         }
