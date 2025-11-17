@@ -34,58 +34,60 @@ This is a personal portfolio website built with HTML, TailwindCSS, and vanilla J
 - Responsive design breakpoints using Tailwind defaults
 
 ### JavaScript
-- IIFE pattern for scoped functionality
-- Event-driven animation triggers
-- Sound effect system for interactions
-- DOM manipulation with consistent ID patterns
+## AI Agent Instructions — Static Portfolio (concise)
 
-### Interactive Elements
-- Terminal-style form inputs use `.terminal-form` class
-- Glowing effects use `glow` animation
-- Hover states consistently use transform scale
-- Card interactions use backdrop-filter blur effects
+Purpose: help an AI code agent be immediately productive editing, testing, and extending this static portfolio site.
 
-## Common Development Tasks
+Overview
+- This repository is a single-page, static portfolio composed of `index.html`, `styles.css`, `matrix.js`, and `script.js`.
+- Visual effects and interactivity are client-side only. There is no build step — Tailwind is included via CDN in `index.html`.
 
-### Adding New Sections
-1. Follow existing section structure in `main.html`
-2. Use `section-bg` class for alternating backgrounds
-3. Include responsive container classes
-4. Add smooth scroll ID to navigation
+Key files (start here)
+- `index.html` — the full page markup and entrypoint. Modify HTML structure and Tailwind utility classes here.
+- `styles.css` — custom CSS for theme, animations, and visual components (profile card, terminal, cards).
+- `matrix.js` — lightweight matrix rain canvas implementation (density, font-size, DPR handling).
+- `script.js` — main UI behavior: typing animation, rotating quotes, particle config, contact form submission, interactive terminal, card tilt, sticky nav.
+- `img/` — media assets (certificates under `img/certi`).
 
-### Styling New Components
-1. Prefer Tailwind classes for standard styles
-2. Add custom styles to `styles.css` for animations
-3. Use existing color variables from `:root`
-4. Follow card-hover pattern for interactive elements
+Project-specific conventions & patterns
+- Visual-first: keep the hacker/cyber aesthetic (green palette). Color variables live in `:root` in `styles.css` (`--hacker-bright`, `--hacker-medium`, etc.).
+- Tailwind + handcrafted CSS: prefer small layout changes via Tailwind classes in `index.html`; add cross-cutting animations or complex selectors in `styles.css`.
+- IIFE JS modules: scripts wrap behavior in IIFEs and initialize on `DOMContentLoaded`.
+- Terminal interaction: the in-page terminal reads commands in `script.js` (`help, whoami, projects, contact, clear, send`). Use `submitContact` to programmatically send messages.
 
-### Implementing Animations
-1. Choose from existing animation classes or add new ones in `styles.css`
-2. Use `animate-*` class naming convention
-3. Consider animation delays for staggered effects
-4. Maintain consistent timing functions
+Integration & external dependencies
+- Tailwind via CDN: `https://cdn.tailwindcss.com` (no local build).
+- Particles: `particles.js` / `tsparticles` loaded via CDN; note `styles.css` sets `#particles-js, #tsparticles { display: none; }` — particle layer is present but hidden by default.
+- Contact form: HTML form uses Formspree action (`https://formspree.io/f/myzlyrgv`) and `script.js` submits JSON to that URL. Inspect network requests when debugging.
 
-### Form Handling
-1. Add new inputs to `contact-form` section
-2. Use terminal-form styling pattern
-3. Include validation attributes
-4. Update form submission handler in `script.js`
+Developer workflows & debugging
+- Local preview: open `index.html` in a browser or run a simple static server:
+	- `python3 -m http.server 8000` (from repo root)
+	- or `npx http-server -c-1` to disable caching.
+- Live debugging: open DevTools → Console & Network. Pay attention to:
+	- matrix canvas sizing on resize (matrix.js handles DPR and debounces resize)
+	- contact POST to Formspree (JSON payload; check CORS and response body)
+	- terminal command errors (they are printed to `#terminal-output`).
+- CI: there's a workflow at `.github/workflows/static.yml` (deploy-related). Edit only if you need to change deployment behavior.
 
-## Best Practices
-1. Maintain cybersecurity theme in new features
-2. Keep matrix rain as primary background
-3. Use green color scheme from CSS variables
-4. Follow terminal/hacker aesthetic for new UI elements
-5. Ensure smooth animations on all interactions
+Safe change recommendations for AI agents
+- Small content edits: update text in `index.html` and `script.js` arrays (typing texts, `cyberQuotes`, `projects`).
+- Visual tweaks: prefer adding classes in `index.html` first; for animations or new components, add CSS to `styles.css` near similar blocks (e.g., put new card styles near `collab-card`).
+- Matrix tuning: edit `matrix.js` — change `fontSize`, `chars`, or drop speed via `drops[i].speed`. Keep DPR scaling logic intact.
+- Contact form fixes: `script.js` already sends JSON to Formspree; if you change the form `action`, update the JS `contact-form` action lookup (it reads `this.action` on submit and uses `submitContact`).
 
-## Performance Considerations
-- Matrix animation is performance-intensive; avoid additional heavy animations
-- Use `transform` and `opacity` for smooth transitions
-- Implement lazy loading for images
-- Consider mobile performance in animations
+Examples (concrete)
+- Add a new project card: modify the `#projects` grid in `index.html`, use `card-hover` + Tailwind classes; add link and icon following existing project entries.
+- Change typing-replace list: open `script.js`, edit `texts` array near the top to add/remove role strings.
+- Make matrix sparser on mobile: in `matrix.js` reduce `columns` or increase `fontSize` when `width < 700`.
 
-## Common Issues & Solutions
-- Matrix rain may cause performance issues on mobile: adjust density
-- Contact form needs proper CORS setup for formspree.io
-- Smooth scroll polyfill may be needed for older browsers
-- Particle system should be disabled on low-power devices
+What NOT to change
+- Do not remove DPR scaling in `matrix.js` (canvas scaling relies on it).
+- Do not remove the `contact-form` JSON handling unless also replacing server endpoint and testing network behavior.
+- Avoid inlining large assets; keep images in `img/` and reference them from `index.html`.
+
+If something is missing
+- Ask for the desired change and whether visual style must remain identical (theme is central).
+- If you need a local mock for Formspree, I can add a brief Node/Python mock endpoint and instructions.
+
+Next step: I can apply this merged file and iterate — tell me if you want more examples or CI/deploy details.
