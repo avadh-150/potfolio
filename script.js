@@ -252,7 +252,7 @@ document
         const status = document.getElementById('statusMessage');
         if (status) {
           status.style.display = 'block';
-          status.textContent = '✓ Message sent successfully! Check your email for confirmation.';
+          status.textContent = '✓ We will contact soon...!';
           status.classList.remove('text-red-400');
           status.classList.add('text-green-400', 'font-semibold');
           setTimeout(() => { status.style.display = 'none'; }, 8000);
@@ -264,7 +264,7 @@ document
         // Optional: Show browser notification if user granted permission
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification("Message Sent!", {
-            body: "Your message has been delivered successfully.",
+            body: "Your message has been Send successfully.",
             icon: "/favicon.ico" // Update with your icon path
           });
         }
@@ -301,7 +301,7 @@ function showSuccessPopup() {
 
   // Set success state
   if (popupTitle) popupTitle.textContent = "> MESSAGE SENT SUCCESSFULLY";
-  if (popupMessage) popupMessage.textContent = "> Your message has been delivered. Check your email!";
+  if (popupMessage) popupMessage.textContent = "> Your message has been Send ✓ We will contact soon...!";
   if (popupTitle) popupTitle.classList.remove("text-red-400");
   if (popupContent) popupContent.classList.remove("border-red-500/30");
   if (icon) { 
