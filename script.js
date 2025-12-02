@@ -85,6 +85,206 @@ particlesJS("particles-js", {
   retina_detect: true
 });
 
+/* ===== PRODUCTION-READY SCROLL ANIMATION SYSTEM ===== */
+(function() {
+  'use strict';
+
+  /**
+   * ScrollAnimationManager - Handles all scroll-triggered animations
+   * Features:
+   * - Intersection Observer for efficient viewport detection
+   * - Parallax effect for hero sections
+   * - Lazy image loading with blur-up effect
+   * - Smooth scroll for anchor links
+   * - Performance optimized with RAF throttling
+   */
+  class ScrollAnimationManager {
+    constructor(config = {}) {
+      this.config = {
+        rootMargin: config.rootMargin || '0px 0px -50px 0px',
+        threshold: config.threshold || 0.1,
+        parallaxStrength: config.parallaxStrength || 0.5,
+        ...config
+      };
+      
+      this.observer = null;
+      this.parallaxElements = [];
+      this.isInitialized = false;
+    }
+
+    /**
+     * Initialize scroll animations and observers
+     */
+    init() {
+      if (this.isInitialized) return;
+      
+      this.setupIntersectionObserver();
+      this.setupParallax();
+      this.setupLazyImages();
+      this.setupSmoothScroll();
+      this.isInitialized = true;
+    }
+
+    /**
+     * Setup Intersection Observer for reveal animations
+     */
+    setupIntersectionObserver() {
+      const options = {
+        root: null,
+        rootMargin: this.config.rootMargin,
+        threshold: this.config.threshold
+      };
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.revealElement(entry.target);
+          }
+        });
+      }, options);
+
+      // Observe all reveal elements
+      const revealSelectors = [
+        '.reveal-element',
+        '.reveal-left',
+        '.reveal-right',
+        '.reveal-scale',
+        '.reveal-fade',
+        '.reveal-quick',
+        '.parallax-element',
+        '.reveal-stagger'
+      ];
+
+      revealSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+          this.observer.observe(el);
+        });
+      });
+    }
+
+    /**
+     * Reveal element with animation
+     */
+    revealElement(element) {
+      // Add revealed class to trigger CSS animation
+      element.classList.add('revealed');
+      
+      // Optional: Stop observing after reveal (uncomment to disable re-trigger on scroll)
+      // this.observer.unobserve(element);
+    }
+
+    /**
+     * Setup parallax effect for hero section
+     * Creates subtle upward movement as you scroll down
+     */
+    setupParallax() {
+      const parallaxTargets = document.querySelectorAll('[data-parallax]');
+      if (parallaxTargets.length === 0) return;
+
+      this.parallaxElements = Array.from(parallaxTargets);
+
+      window.addEventListener('scroll', this.updateParallax.bind(this), { passive: true });
+      this.updateParallax(); // Initial call
+    }
+
+    /**
+     * Update parallax positions based on scroll
+     */
+    updateParallax() {
+      this.parallaxElements.forEach(element => {
+        const scrollY = window.scrollY;
+        const elementOffset = element.offsetTop;
+        const distance = scrollY - elementOffset;
+        const parallax = distance * this.config.parallaxStrength;
+
+        element.style.transform = `translateY(${parallax}px)`;
+      });
+    }
+
+    /**
+     * Setup lazy image loading with blur-up effect
+     */
+    setupLazyImages() {
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            const src = img.dataset.src;
+
+            if (src) {
+              img.src = src;
+              img.addEventListener('load', () => {
+                img.classList.add('loaded');
+                imageObserver.unobserve(img);
+              });
+            }
+          }
+        });
+      }, { rootMargin: '50px' });
+
+      document.querySelectorAll('img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+      });
+    }
+
+    /**
+     * Setup smooth scroll behavior for anchor links
+     */
+    setupSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          const targetId = anchor.getAttribute('href');
+          if (targetId === '#') return;
+
+          const target = document.querySelector(targetId);
+          if (!target) return;
+
+          e.preventDefault();
+
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+
+          // Update URL without page jump
+          window.history.pushState(null, null, targetId);
+        });
+      });
+    }
+
+    /**
+     * Destroy observer (cleanup)
+     */
+    destroy() {
+      if (this.observer) {
+        this.observer.disconnect();
+        this.observer = null;
+      }
+      window.removeEventListener('scroll', this.updateParallax);
+      this.isInitialized = false;
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const scrollAnimationManager = new ScrollAnimationManager({
+        rootMargin: '0px 0px -50px 0px',
+        threshold: 0.1,
+        parallaxStrength: 0.5
+      });
+      scrollAnimationManager.init();
+    });
+  } else {
+    const scrollAnimationManager = new ScrollAnimationManager({
+      rootMargin: '0px 0px -50px 0px',
+      threshold: 0.1,
+      parallaxStrength: 0.5
+    });
+    scrollAnimationManager.init();
+  }
+})();
+
 
 // Typing animation
 const typingText = document.getElementById("typing-text");

@@ -75,7 +75,7 @@
     <section id="home" class="min-h-screen flex items-center justify-center pt-20">
       <div class="container mx-auto px-4">
         <div class="flex flex-col lg:flex-row items-center justify-between">
-          <div class="lg:w-1/2 text-center lg:text-left mb-8 lg:mb-0 animate-slide-left">
+          <div class="lg:w-1/2 text-center lg:text-left mb-8 lg:mb-0 animate-slide-left reveal-left">
             <h1 class="text-4xl lg:text-6xl font-bold mb-4">
               Hey, I'm <span class="gradient-text">Avadh Radadiya</span>
             </h1>
@@ -106,7 +106,7 @@
               <a href="https://www.linkedin.com/in/avadh-radadiya-a490bb349/" target="_blank"
                 class="text-2xl hover:text-green-400 transition transform hover:scale-110">
                 <i class="fab fa-linkedin"></i>
-              </a>
+            </a>
               <!-- <a href="https://www.google.com/search?q=Sharan+Vasoya" target="_blank"
                 class="text-2xl hover:text-green-400 transition transform hover:scale-110">
                 <i class="fas fa-globe"></i>
@@ -150,7 +150,7 @@
               </div>
             </div> -->
           <!-- Profile Card Section -->
-          <div class="profile-card-container animate-slide-right">
+          <div class="profile-card-container animate-slide-right reveal-right">
             <div class="cyber-card">
               <!-- Glitch Effect Overlay -->
               <div class="glitch-overlay"></div>
@@ -261,17 +261,17 @@
   <!-- About Section (modernized) -->
   <section id="about" class="py-20 section-bg">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text animate-fade-up">
+      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text animate-fade-up reveal-element">
         About Me
       </h2>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="animate-slide-left">
+        <div class="animate-slide-left reveal-left">
           <h3 class="text-2xl font-semibold mb-6 text-green-400">
             Professional Summary
           </h3>
           <div class="space-y-6">
             <!--  Professional Summary Paragraph -->
-            <div class="card-hover p-6 rounded-lg backdrop-blur-sm border border-green-500/10">
+            <div class="card-hover p-6 rounded-lg backdrop-blur-sm border border-green-500/10 reveal-element">
               <p class="text-gray-300 leading-relaxed">
                 I’m actively building my path in cybersecurity with a focus on offensive security, network defense, and
                 practical hands-on experimentation. My background includes networking fundamentals (VLANs, routing,
@@ -513,7 +513,7 @@
   <!-- Experience Section -->
   <section id="experience" class="py-20">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text">
+      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text reveal-element">
         Professional Experience
       </h2>
       <div class="max-w-4xl mx-auto">
@@ -528,7 +528,7 @@
               <div
                 class="absolute left-4 lg:left-1/2 transform lg:-translate-x-1/2 w-4 h-4 bg-green-500 rounded-full border-4 border-black">
               </div>
-              <div class="ml-12 lg:ml-0 lg:w-1/2 lg:pr-8 animate-slide-left">
+              <div class="ml-12 lg:ml-0 lg:w-1/2 lg:pr-8 animate-slide-left reveal-left">
                 <div class="card-hover p-6 rounded-lg">
                   <div class="flex justify-between items-start mb-4">
                     <div>
@@ -627,13 +627,13 @@
   <!-- Projects Section -->
   <section id="projects" class="py-20">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text">
+      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 gradient-text reveal-element">
         Projects
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 reveal-stagger">
 
         <!-- Multi-floor-Enterprise-Design-Network -->
-        <div class="card-hover rounded-lg animate-fade-up flex flex-col bg-gray-900/70 p-6">
+        <div class="card-hover rounded-lg animate-fade-up flex flex-col bg-gray-900/70 p-6 reveal-scale">
           <h3 class="text-xl font-bold mb-2 text-green-400 flex items-center">
             <i class="fas fa-network-wired mr-2"></i>Multi-floor-Enterprise-Design-Network
           </h3>
@@ -811,11 +811,11 @@
   <!-- Certificates / Collaborators Section -->
   <section id="certificates" class="py-20 section-bg">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-8 gradient-text animate-fade-up">
+      <h2 class="text-3xl lg:text-4xl font-bold text-center mb-8 gradient-text animate-fade-up reveal-element">
         Certifications & Achievements
       </h2>
 
-      <div class="collab-wrap relative">
+      <div class="collab-wrap relative reveal-stagger">
         <div class="collab-grid">
           <!-- Networking Analyzer -->
           <article class="collab-card" tabindex="0">
@@ -991,10 +991,10 @@
   <!-- Contact Section -->
   <section id="contact" class="py-20">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl lg:text-4xl font-bolbold text-center mb-12 gradient-text">
+      <h2 class="text-3xl lg:text-4xl font-bolbold text-center mb-12 gradient-text reveal-element">
         Get In Touch
       </h2>
-      <div class="max-w-2xl mx-auto">
+      <div class="max-w-2xl mx-auto reveal-scale">
         <form class="terminal-form p-8 rounded-xl shadow-2xl bg-black/70 border border-cyan-700 ring-container"
           id="contact-form" action="https://formspree.io/f/myzlyrgv" method="post"
           style="font-family: 'Fira Mono', 'Consolas', monospace">
